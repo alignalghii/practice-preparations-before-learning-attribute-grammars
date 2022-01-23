@@ -1,0 +1,45 @@
+GHCi, version 8.0.2: http://www.haskell.org/ghc/  :? for help
+Prelude> omega = omega
+Prelude> omega
+^CInterrupted.
+Prelude> let omega = omega in omega
+^CInterrupted.
+Prelude> let omega = omega in 12
+12
+Prelude> y f = f (y f)
+Prelude> y id
+^CInterrupted.
+Prelude> omeaga = y id
+Prelude> omega
+^CInterrupted.
+Prelude> let (a, b) = (12, a) in (a, b)
+(12,12)
+Prelude> cross (a, b) = (12, a)
+Prelude> cross (231,6784)
+(12,231)
+Prelude> y cross
+*** Exception: stack overflow
+Prelude> cross undefined 
+*** Exception: Prelude.undefined
+CallStack (from HasCallStack):
+  error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
+  undefined, called at <interactive>:13:7 in interactive:Ghci8
+Prelude> let (a, b) = cross (a, b) in (a, b)
+(12,12)
+Prelude> cross $ cross $ cross $ cross (a, b)
+
+<interactive>:15:32: error: Variable not in scope: a
+
+<interactive>:15:35: error: Variable not in scope: b
+Prelude> cross $ cross $ cross $ cross undefined 
+*** Exception: Prelude.undefined
+CallStack (from HasCallStack):
+  error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
+  undefined, called at <interactive>:16:31 in interactive:Ghci9
+Prelude> cross ~(a, b) = (12, a)
+Prelude> cross $ cross $ cross $ cross undefined 
+(12,12)
+Prelude> y cross
+(12,12)
+Prelude> 
+
