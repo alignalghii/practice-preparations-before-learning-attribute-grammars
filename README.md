@@ -1,10 +1,10 @@
-Wouter Swierstra: [Why attribute grammars matter](https://wiki.haskell.org/The_Monad.Reader/Issue4/Why_Attribute_Grammars_Matter)
+This miniproject of mine simply tries out the code what Wouter Swierstra showed in his article „[Why attribute grammars matter](https://wiki.haskell.org/The_Monad.Reader/Issue4/Why_Attribute_Grammars_Matter)”.
 
 The simple writing down of the examples (with a little simplification) can be seen here in this repository.
 
 The small simplification: the motivating example is simplified very slightly:
 
-- Write an `equalize` function, which takes a list of real (Float) numbers, and replaces each item with the overall average.
+- Write an `equalize` function, which takes a list of real (`Float`) numbers, and replaces each item with the overall average.
 In short, this is a „communist” function: takes the populace of a country (a list of their incomes), and produces a list of the same length, with each item replaced to the average income.
 - Implement this with as few traversals as You can.
 
@@ -37,15 +37,15 @@ countAndTaxate = foldr ((***) succ . (+)) (0, 0)
 -- lengthSum (a : as) = (succ *** (+ a)) $ lengthSum as
 ```
 
-These are the unoptimalized solution (3-traversal), and after that, a partially optimized solution (2-traversal).
+These are the unoptimized solution (3-traversal), and after that, a partially optimized solution (2-traversal).
 The names of the auxiliary functions are talking names:
 
 - Unoptimized version: a communist income policy consists of counting the people (1st traversal), gathering their incomes into a result sum (2nd traversal), and distributing back (3rd traversal, although this is a building traversal hiding behind `iterate`), each person becoming the average.
 - Also the partially optimized version uses talking names: we count and taxate the people simultaneously (1st traversal), then distribute back (2nd traversal). The main point is to introduce a temporary data type to store the current count and sum continuously during the first traversal. We will see that this idea will have an analogy in the shape of the `Writer` monad and `WriterT` monad transformer: representing important surplus information with tuples (or augmenting an existing tuple with one more slot). 
 
-of course the main gloal is to demonstate a single-traversal version. Yes, there exists such an optimization, moreover, the author presents two variants.
+Of course the main gloal is to demonstate a single-traversal version. Yes, there exists such an optimization, moreover, the author presents two variants.
 
-The first variant extends the idea seem before:
+The first variant extends the idea just seen above:
 
 ```haskell
 ----------------------------------------
@@ -84,7 +84,7 @@ let (count, sum, xs) = ... sum ... count
 in xs 
 ```
 
-It works, and does not run into an infinite runaway, but why? Why is it not a syntax error, and if it evades syntax check, how can it terminate at all? We know, — and the author mentions too, — that lazy evaluation can handle this, so it is not a menaingless thing: the main reason is that some of the variables do not depend contentually from the others (because are constant to the parametrization), thus the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
+It works: it terinates with the correct result (see the unit tests in all three modules, start [from here](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/Main.hs)), it does not run into an infinite runaway, but how can it work at all? Why is it not a syntax error, and if it evades syntax check, how can it terminate at all? We know, — and the author mentions too, — that lazy evaluation can handle this, so it is not a menaingless thing: the main reason is that some of the variables do not depend contentually from the others (because are constant to the parametrization), thus the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
 
 let us start the Haskell compliler interactively — e.g. by starting  `ghci` — and type in:
 
@@ -135,4 +135,4 @@ Prelude> y cross
 Prelude> 
 ```
 
-In summary. Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
+In summary: Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
