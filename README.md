@@ -83,7 +83,7 @@ let (count, sum, xs) = ... sum ... count
 in xs 
 ```
 
-It works, but why? We knoow, and the auther mentions too, that lazy evaluation can handle this, and the main reason is that some of the variables do not depens from the others, and the dependencies are so that lazy evaluation can untangle them, but it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the let-rec topics).
+It works, but why? We know, — and the author mentions too, — that lazy evaluation can handle this, and the main reason is that some of the variables do not depend from the others (are constant to the parametrization), and the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
 
 let us start the Haskell compliler interactively — e.g. by starting  `ghci` — and type in:
 
@@ -134,4 +134,4 @@ Prelude> y cross
 Prelude> 
 ```
 
-In summary. Haskell's lazy `let` construct implements a potention recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
+In summary. Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
