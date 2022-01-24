@@ -178,8 +178,8 @@ The desired deduction is that **Y** _f_ must reduce to _f_(**Y** _f_), and that 
 Now let us define the ordered pair:
 
 - **pair** ≡ λ*x y f*._f x y_
-- **fst** ≡ λ*p*._p_**K**
-- **snd** ≡ λ*p*._p_(**K I**)
+- **fst** ≡ λ*p*._p_ **K**
+- **snd** ≡ λ*p*._p_ (**K I**)
 
 The desired dueductions here are: for anything _α_ and _β_, we expect both
 - **fst** (**pair** _α β_) reducing to _α_
@@ -195,7 +195,7 @@ What we expect is **let-rec-sample** terminating under lazy evaluation (normal-o
 
 **let-rec-sample-precursor** ≡ λ*p*.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
 
-The syntactic sugar of using the composition ⋅ operator can be justified because it can be encoded inside pure lambda terms with λ_fgx_._f_(_gx_).
+The syntactic sugar of using the composition ⋅ operator can be justified because it can be encoded inside pure lambda terms with λ*f g x*._f_(_gx_).
 
 Now **let-rec-sample** being identic to **Y** **let-rec-sample-precursor** reduces to  (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., in short (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., but this potentialy infinite term must reduce only till the first two subterms (lazy / normal order evaluation manages this well, see the leftmost-outermost reduction strategy).
 
