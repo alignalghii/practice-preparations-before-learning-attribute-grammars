@@ -41,7 +41,7 @@ These are the unoptimized solution (3-traversal), and after that, a partially op
 The names of the auxiliary functions are talking names:
 
 - Unoptimized version: a communist income policy consists of counting the people (1st traversal), gathering their incomes into a result sum (2nd traversal), and distributing back (3rd traversal, although this is a building traversal hiding behind `iterate`), each person becoming the average.
-- Also the partially optimized version uses talking names: we count and taxate the people simultaneously (1st traversal), then distribute back (2nd traversal). The main point is to introduce a temporary data type to store the current count and sum continuously during the first traversal. We will see that this idea will have an analogy in the shape of the `Writer` monad and `WriterT` monad transformer: representing important surplus information with tuples (or augmenting an existing tuple with one more slot). 
+- Also the partially optimized version uses talking names: we count and taxate the people simultaneously (1st traversal), then distribute back (2nd traversal). The main point is to introduce a temporary data type to store the current count and sum continuously during the first traversal. We will see that this idea will have an analogy in the shape of the `Writer` monad and `WriterT` monad transformer: representing important surplus information with tuples (or augmenting an existing tuple with one more slot).
 
 Of course the main gloal is to demonstate a single-traversal version. Yes, there exists such an optimization, moreover, the author presents two variants.
 
@@ -81,7 +81,7 @@ the main `let`... `in`... constructs becomes seemingly strange, paradoxical, sel
 
 ```haskell
 let (count, sum, xs) = ... sum ... count
-in xs 
+in xs
 ```
 
 It works: it terinates with the correct result (see the unit tests in all three modules, start [from here](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/Main.hs)), it does not run into an infinite runaway, but how can it work at all? Why is it not a syntax error, and if it evades syntax check, how can it terminate at all? We know, — and the author mentions too, — that lazy evaluation can handle this, so it is not a menaingless thing: the main reason is that some of the variables do not depend contentually from the others (because are constant to the parametrization), thus the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
@@ -110,7 +110,7 @@ Prelude> cross (231,6784)
 (12,231)
 Prelude> y cross
 *** Exception: stack overflow
-Prelude> cross undefined 
+Prelude> cross undefined
 *** Exception: Prelude.undefined
 CallStack (from HasCallStack):
   error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
@@ -122,17 +122,91 @@ Prelude> cross $ cross $ cross $ cross (a, b)
 <interactive>:15:32: error: Variable not in scope: a
 
 <interactive>:15:35: error: Variable not in scope: b
-Prelude> cross $ cross $ cross $ cross undefined 
+Prelude> cross $ cross $ cross $ cross undefined
 *** Exception: Prelude.undefined
 CallStack (from HasCallStack):
   error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
   undefined, called at <interactive>:16:31 in interactive:Ghci9
 Prelude> cross ~(a, b) = (12, a)
-Prelude> cross $ cross $ cross $ cross undefined 
+Prelude> cross $ cross $ cross $ cross undefined
 (12,12)
 Prelude> y cross
 (12,12)
-Prelude> 
+Prelude>
 ```
 
 In summary: Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
+
+Let us see a minimal example for a seemingly paradoxical `let`... `in` expression:
+
+```haskell
+let (a, b) = (1, a) in (a, b)
+```
+
+here the variable *a* is present both on the left-hand-side and the right-hand side, still, the expression terminates with `(1, 1)`. How does it do it?
+
+Let us simulate the let-rec construct with the fixpoint combinator:
+
+```haskell
+letRec_construct, fixpoint_call :: (Int, Int)
+letRec_construct = let (m, n) = (0, m) in (m, n) -- seems to be paradoxical, meaningless, or infinitely running
+fixpoint_call = fixpointCombinator letRec_precursor -- has a terminating lambda-calculus definition under lazy evaluation
+
+-- Precursor function of the sample lazyletrec construct
+letRec_precursor :: Transform (Int, Int)
+letRec_precursor ~(m, _) = (0, m)
+```
+
+where, of course, the famous fixpoint combinator is:
+
+```haskell
+-- The fixpoint combinator Y, see lambda calculus or combinatory logic
+fixpointCombinator :: (a -> a) -> a
+fixpointCombinator f = f $ fixpointCombinator f
+```
+
+It works (but note the irrefutable pattern at the `letRec_precursor`, it does not work without it!)
+Still, we do not really see the underlying deduction precisely and formally. Let us translate everything to pure combinatory logic!
+
+Let us begin with the fixpoint combinator:
+
+**X** ≡ λ*xf*.*f*(*xxf*)
+**Y** ≡ **X** **X**
+
+The desired deduction is that **Y** _f_ must reduce to _f_(**Y** f), and that is achieved, because  **X X** _f_ indeed reduces to _f_(**X X** _f_), and that is the same.
+
+Now let us define the ordered pair:
+
+**pair** ≡ λ_xyf_._fxy_
+**fst** ≡ λ_p_._p_**K**
+**snd** ≡ λ_p_._p_(**K I**)
+
+The desired dueductions here are: for anything _α_ and _β_, we expect both
+- **fst** (**pair** α β) reducing to _α_
+- **snd** (**pair** α β) reducing to _β_
+and both hold true.
+
+now let us encode the lazy let-rec contruct in the seemingly paradoxical sample!
+
+**let-rec-sample-precursor** ≡ λ_p_.**pair** 1 (**fst** _p_)
+**let-rec-sample** ≡ **Y** **let-rec-sample-precursor**
+
+What we expect is **let-rec-sample** terminating under lazy evaluation (normal-order reduction stategy, leftmost-outermost reduction strategy), and that holds true. let us use the syntactic sugar of function composition:
+
+**let-rec-sample-precursor** ≡ λ_p_.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
+
+The syntactic sugar of using the composition ⋅ operator can be justified because it can be encoded inside pure lambda terms with λ_fgx_._f_(_gx_).
+
+Now **let-rec-sample** being identic to **Y** **let-rec-sample-precursor** reduces to  (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., in short (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., but this potentialy infinite term must reduce only till the first two subterms (lazy / normal order evaluation manages this well, see the leftmost-outermost reduction strategy).
+
+And it is now straightforward to see th reduction steps, and prove that the expectation holds true. For clarity, regexps are underlined:
+
+- <u>(**pair 1** ⋅ **fst**)</u> (**pair 1** ⋅ **fst**) ... reduces to **pair 1** (**fst** ((**pair 1** ⋅ **fst**) ...))
+- **pair 1** (**fst** (<u>(**pair 1** ⋅ **fst**) ...</u>)) reduces further to **pair 1** (**fst** (**pair 1** (**fst** ...)))
+- **pair 1** (<u>**fst** (**pair 1** (**fst** ...))</u>) reduces further to **pair 1** (**pair 1** (**fst** ...) **K**)
+- **pair 1** (<u>**pair 1** (**fst** ...) **K**</u>) reduces further to **pair 1** (**K 1** (**fst** ...))
+- **pair 1** (<u>**K 1** (**fst** ...)</u>) reduces further to **pair 1 1**
+
+Quod erat demonstrandum.
+
+For working with pure lambda calculus expressions under lazy evaluation strategy, You can see my project [combinatory logic evaluator / interpreter](https://github.com/alignalghii/CL-zipper-RWS). Although this implements combinatory logic, not lambda calculus, but the questions in impplementation details can be similar.
