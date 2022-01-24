@@ -201,11 +201,11 @@ Now **let-rec-sample** being identic to **Y** **let-rec-sample-precursor** reduc
 
 And it is now straightforward to see the reduction steps, and prove that the expectation holds true. For clarity, regexps are underlined:
 
-- <u>(**pair 1** ⋅ **fst**)</u> (**pair 1** ⋅ **fst**) ... reduces to **pair 1** (**fst** ((**pair 1** ⋅ **fst**) ...))
-- **pair 1** (**fst** (<u>(**pair 1** ⋅ **fst**) ...</u>)) reduces further to **pair 1** (**fst** (**pair 1** (**fst** ...)))
-- **pair 1** (<u>**fst** (**pair 1** (**fst** ...))</u>) reduces further to **pair 1** (**pair 1** (**fst** ...) **K**)
-- **pair 1** (<u>**pair 1** (**fst** ...) **K**</u>) reduces further to **pair 1** (**K 1** (**fst** ...))
-- **pair 1** (<u>**K 1** (**fst** ...)</u>) reduces further to **pair 1 1**
+- <ins>(**pair 1** ⋅ **fst**)</ins> (**pair 1** ⋅ **fst**) ... reduces to **pair 1** (**fst** ((**pair 1** ⋅ **fst**) ...))
+- **pair 1** (**fst** (<ins>(**pair 1** ⋅ **fst**) ...</ins>)) reduces further to **pair 1** (**fst** (**pair 1** (**fst** ...)))
+- **pair 1** (<ins>**fst** (**pair 1** (**fst** ...))</ins>) reduces further to **pair 1** (**pair 1** (**fst** ...) **K**)
+- **pair 1** (<ins>**pair 1** (**fst** ...) **K**</ins>) reduces further to **pair 1** (**K 1** (**fst** ...))
+- **pair 1** (<ins>**K 1** (**fst** ...)</ins>) reduces further to **pair 1 1**
 
 Quod erat demonstrandum.
 
