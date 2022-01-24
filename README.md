@@ -207,6 +207,39 @@ And it is now straightforward to see the reduction steps, and prove that the exp
 - **pair 1** (<ins>**pair 1** (**fst** ...) **K**</ins>) reduces further to **pair 1** (**K 1** (**fst** ...))
 - **pair 1** (<ins>**K 1** (**fst** ...)</ins>) reduces further to **pair 1 1**
 
-Quod erat demonstrandum.
+Quod erat demonstrandum. So we have just seen why Haskell's
 
-For working with pure lambda calculus expressions under lazy evaluation strategy, You can see my project [combinatory logic evaluator / interpreter](https://github.com/alignalghii/CL-zipper-RWS). Although this implements combinatory logic, not lambda calculus, but the questions in impplementation details can be similar.
+```haskell
+let (a, b) = (1, a) in (a, a)
+```
+
+lazy let-rec construct terminates and evalues to `(1, 1)`.
+
+An this let-rec is not more difficult than
+
+```haskell
+let (count, sum, xs) = ... sum ... count
+in xs
+```
+
+is, the mysterious „credit-card borrow to the future” part of Wouter Swiestra's article, presented here with
+
+```haskell
+-------------------------------------------------
+-- Attribute grammar inspired (single-traversal):
+-------------------------------------------------
+
+equalize''' :: Transform [Float]
+equalize''' lst = let cons x withAvg   = \avg -> let (     count,     sum,       xs) = withAvg avg
+                                                 in  (succ count, x + sum, avg : xs)
+                      nil              = \_   ->     (         0,       0,       [])
+                      (count, sum, xs) = foldr cons nil lst (sum / fromIntegral count)
+                  in xs
+```
+
+so we have seen that this solution is valid, moreover, completely translatable to pure combinatory logic, and reducable with pencil-and-paper to termination (normal form), having valid result.
+
+For working with pure lambda calculus expressions under lazy evaluation strategy, You can see some of my implementation projects on pure combinatory ogic. Although these implement combinatory logic, not lambda calculus, but the questions in impplementation details can be similar.
+- [This combinatory logic evaluator / interpreter](https://github.com/alignalghii/CL-zipper-RWS) has a clean implementation, but has only very few features for practical use, it is extemely minimal, although its code can accept well further extensions.
+- [An even more extremest minimalistic project](https://hub.darcs.net/physis/CL-LeftAssocApplTreeZipper/browse/Comb.hs). In experimental stage.
+- [A practically usable project](https://hub.darcs.net/physis/CL-quine): it is much more user-friendy with many features, but has a rather old and tangled sourcecode. It has also a sample combinator library, like the most familiar combinators above the familair **S**-and-**K**-base : **C**, **B**, **Y** and many more.
