@@ -170,36 +170,36 @@ Still, we do not really see the underlying deduction precisely and formally. Let
 
 Let us begin with the fixpoint combinator:
 
-**X** ≡ λ*xf*.*f*(*xxf*)
-**Y** ≡ **X** **X**
+- **X** ≡ λ*x f*.*f* (*x x f*)
+- **Y** ≡ **X** **X**
 
-The desired deduction is that **Y** _f_ must reduce to _f_(**Y** f), and that is achieved, because  **X X** _f_ indeed reduces to _f_(**X X** _f_), and that is the same.
+The desired deduction is that **Y** _f_ must reduce to _f_(**Y** _f_), and that is achieved, because  **X X** _f_ indeed reduces to _f_(**X X** _f_), and we remember that **Y** is defined as and is identical to **X X**.
 
 Now let us define the ordered pair:
 
-**pair** ≡ λ_xyf_._fxy_
-**fst** ≡ λ_p_._p_**K**
-**snd** ≡ λ_p_._p_(**K I**)
+- **pair** ≡ λ*x y f*._f x y_
+- **fst** ≡ λ*p*._p_**K**
+- **snd** ≡ λ*p*._p_(**K I**)
 
 The desired dueductions here are: for anything _α_ and _β_, we expect both
-- **fst** (**pair** α β) reducing to _α_
-- **snd** (**pair** α β) reducing to _β_
+- **fst** (**pair** _α β_) reducing to _α_
+- **snd** (**pair** _α β_) reducing to _β_
 and both hold true.
 
 now let us encode the lazy let-rec contruct in the seemingly paradoxical sample!
 
-**let-rec-sample-precursor** ≡ λ_p_.**pair** 1 (**fst** _p_)
+**let-rec-sample-precursor** ≡ λ*p*.**pair** 1 (**fst** _p_)
 **let-rec-sample** ≡ **Y** **let-rec-sample-precursor**
 
 What we expect is **let-rec-sample** terminating under lazy evaluation (normal-order reduction stategy, leftmost-outermost reduction strategy), and that holds true. let us use the syntactic sugar of function composition:
 
-**let-rec-sample-precursor** ≡ λ_p_.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
+**let-rec-sample-precursor** ≡ λ*p*.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
 
 The syntactic sugar of using the composition ⋅ operator can be justified because it can be encoded inside pure lambda terms with λ_fgx_._f_(_gx_).
 
 Now **let-rec-sample** being identic to **Y** **let-rec-sample-precursor** reduces to  (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., in short (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., but this potentialy infinite term must reduce only till the first two subterms (lazy / normal order evaluation manages this well, see the leftmost-outermost reduction strategy).
 
-And it is now straightforward to see th reduction steps, and prove that the expectation holds true. For clarity, regexps are underlined:
+And it is now straightforward to see the reduction steps, and prove that the expectation holds true. For clarity, regexps are underlined:
 
 - <u>(**pair 1** ⋅ **fst**)</u> (**pair 1** ⋅ **fst**) ... reduces to **pair 1** (**fst** ((**pair 1** ⋅ **fst**) ...))
 - **pair 1** (**fst** (<u>(**pair 1** ⋅ **fst**) ...</u>)) reduces further to **pair 1** (**fst** (**pair 1** (**fst** ...)))
