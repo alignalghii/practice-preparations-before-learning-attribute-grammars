@@ -186,18 +186,26 @@ The desired dueductions here are: for anything _α_ and _β_, we expect both
 - **snd** (**pair** _α β_) reducing to _β_
 and both hold true.
 
-now let us encode the lazy let-rec contruct in the seemingly paradoxical sample!
+now let us encode the seemingly paradoxical let-rec construct `let (m, n) = (0, m) in (m, n)` into pure lambda calculus:
 
-**let-rec-sample-precursor** ≡ λ*p*.**pair** 1 (**fst** _p_)
-**let-rec-sample** ≡ **Y** **let-rec-sample-precursor**
+**let-rec-example** ≡ **Y** **let-rec-example-precursor**
 
-What we expect is **let-rec-sample** terminating under lazy evaluation (normal-order reduction stategy, leftmost-outermost reduction strategy), and that holds true. let us use the syntactic sugar of function composition:
+where
 
-**let-rec-sample-precursor** ≡ λ*p*.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
+**let-rec-example-precursor** ≡ λ⟨*a*, *b*⟩.⟨1, *a*⟩
+
+which latter is of course a syntactic sugar, it must be translated to pure lambda calculus so:
+
+**let-rec-example-precursor** ≡ λ*p*.**pair** 1 (**fst** _p_)
+
+
+What we expect is **let-rec-example** terminating under lazy evaluation (normal-order reduction stategy, leftmost-outermost reduction strategy), and that holds true. let us use the syntactic sugar of function composition:
+
+**let-rec-example-precursor** ≡ λ*p*.**pair 1** (**fst** _p_) ≡ **pair 1** ⋅ **fst**
 
 The syntactic sugar of using the composition ⋅ operator can be justified because it can be encoded inside pure lambda terms with λ*f g x*._f_(_gx_).
 
-Now **let-rec-sample** being identic to **Y** **let-rec-sample-precursor** reduces to  (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., in short (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., but this potentialy infinite term must reduce only till the first two subterms (lazy / normal order evaluation manages this well, see the leftmost-outermost reduction strategy).
+Now **let-rec-example** being identic to **Y** **let-rec-example-precursor** reduces to  (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., in short (**pair** 1 ⋅ **fst**) (**pair** 1 ⋅ **fst**) ..., but this potentialy infinite term must reduce only till the first two subterms (lazy / normal order evaluation manages this well, see the leftmost-outermost reduction strategy).
 
 And it is now straightforward to see the reduction steps, and prove that the expectation holds true. For clarity, regexps are underlined:
 
@@ -222,7 +230,7 @@ let (count, sum, xs) = ... sum ... count
 in xs
 ```
 
-is, the mysterious „credit-card borrow to the future” part of Wouter Swiestra's article, presented here with
+is! so the mysterious „credit-card borrow to the future” part of Wouter Swiestra's article, presented here with
 
 ```haskell
 -------------------------------------------------
@@ -237,7 +245,7 @@ equalize''' lst = let cons x withAvg   = \avg -> let (     count,     sum,      
                   in xs
 ```
 
-so we have seen that this solution is valid, moreover, completely translatable to pure combinatory logic, and reducable with pencil-and-paper to termination (normal form), having valid result.
+looks no more so msterious: because we have just seen above on the example of a simplified construct, `let (m, n) = (0, m) in (m, n)`, that this has an entirely valid solution, moreover, it is completely translatable to pure combinatory logic, and reducable with pencil-and-paper to termination (normal form), having valid result.
 
 For working with pure lambda calculus expressions under lazy evaluation strategy, You can see some of my implementation projects on pure combinatory ogic. Although these implement combinatory logic, not lambda calculus, but the questions in impplementation details can be similar.
 - [This combinatory logic evaluator / interpreter](https://github.com/alignalghii/CL-zipper-RWS) has a clean implementation, but has only very few features for practical use, it is extemely minimal, although its code can accept well further extensions.
