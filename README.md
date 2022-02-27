@@ -84,7 +84,7 @@ let (count, sum, xs) = ... sum ... count
 in xs
 ```
 
-It works: it terinates with the correct result (see the unit tests in all three modules, start [from here](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/Main.hs)), it does not run into an infinite runaway, but how can it work at all? Why is it not a syntax error, and if it evades syntax check, how can it terminate at all? We know, — and the author mentions too, — that lazy evaluation can handle this, so it is not a menaingless thing: the main reason is that some of the variables do not depend contentually from the others (because are constant to the parametrization), thus the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
+It works: it terminates with the correct result (see the unit tests in all three modules, start [from here](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/Main.hs)), it does not run into an infinite runaway, but how can it work at all? Why is it not a syntax error, and if it evades syntax check, how can it terminate at all? We know, — and the author mentions too, — that lazy evaluation can handle this, so it is not a menaingless thing: the main reason is that some of the variables do not depend contentually from the others (because are constant to the parametrization), thus the dependencies are so that lazy evaluation can untangle these hidden dependecies and indepenedencies. But this is just a feeling, we may want a formal understanding too. So it seems worth looking more deeply behind Haskell's lazy ``let`` construct, capable of encoding whole recursion (the *let-rec* topics).
 
 let us start the Haskell compliler interactively — e.g. by starting  `ghci` — and type in:
 
@@ -135,7 +135,7 @@ Prelude> y cross
 Prelude>
 ```
 
-In summary: Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject.
+In summary: Haskell's lazy `let` construct implements a potential recursion construct in a hidden, implicit way (it is a *let-rec*). In pure lambda-calculus, it could be translated into pure lambda calculus terms with the use of the **Y** fixpoint-combinator. Its semantics can be seen from the above `ghci` session, and also from the [LazyLetRec](https://github.com/alignalghii/practice-preparations-before-learning-attribute-grammars/blob/main/LazyLetRec.hs) module of this little miniproject. For more detailed treatment (and nicer typesetting of mathematical formulae), see a sister project of mine for this project, namely the [self-calculus project](https://alignalghii.github.io/self-calculus-and-semiself-translation.en.html), which includes also a focused [explanatory section about let-rec](https://alignalghii.github.io/let-rec.en.html).
 
 Let us see a minimal example for a seemingly paradoxical `let`... `in` expression:
 
